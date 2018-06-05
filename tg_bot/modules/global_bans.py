@@ -54,7 +54,7 @@ def gban(bot: Bot, update: Update, args: List[str]):
         return
 
     if int(user_id) in SUDO_USERS:
-        message.reply_text("I spy, with my little eye... a sudo user war! Why are you guys turning on each other?")
+        message.reply_text("Only My owner {}, can do this!".format(OWNER_ID))
         return
 
     if int(user_id) in SUPPORT_USERS:
@@ -62,7 +62,7 @@ def gban(bot: Bot, update: Update, args: List[str]):
         return
 
     if user_id == bot.id:
-        message.reply_text("-_- So funny, lets gban myself why don't I? Nice try.")
+        message.reply_text("So funny! I won't be globally banning myself -_-")
         return
 
     try:
@@ -124,7 +124,7 @@ def gban(bot: Bot, update: Update, args: List[str]):
             pass
 
     send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "gban complete!")
-    message.reply_text("Person has been gbanned.")
+    message.reply_text("Person has been Globally banned.")
 
 
 @run_async
@@ -245,7 +245,7 @@ def gbanstat(bot: Bot, update: Update, args: List[str]):
             sql.disable_gbans(update.effective_chat.id)
             update.effective_message.reply_text("I've disabled gbans in this group. GBans wont affect your users "
                                                 "anymore. You'll be less protected from any trolls and spammers "
-                                                "though!")
+                                                "though! We highly recommend to set this to on/yes")
     else:
         update.effective_message.reply_text("Give me some arguments to choose a setting! on/off, yes/no!\n\n"
                                             "Your current setting is: {}\n"
