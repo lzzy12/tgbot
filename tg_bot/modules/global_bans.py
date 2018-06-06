@@ -54,7 +54,7 @@ def gban(bot: Bot, update: Update, args: List[str]):
         return
 
     if int(user_id) in SUDO_USERS:
-        message.reply_text("Only My owner {}, can do this!".format(OWNER_ID))
+        message.reply_text("Only My owner {}, can do this!".format(OWNER_USERNAME))
         return
 
     if int(user_id) in SUPPORT_USERS:
