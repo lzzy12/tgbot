@@ -67,7 +67,7 @@ def ban_in_all_group(bot: Bot, user_id):
 @run_async
 def gban(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message  # type: Optional[Message]
-
+    banner = update.effective_user
     user_id, reason = extract_user_and_text(message, args)
 
     if not user_id:
@@ -77,7 +77,10 @@ def gban(bot: Bot, update: Update, args: List[str]):
     if int(user_id) == OWNER_ID:
         message.reply_text("Well, RiP yourself. He's my owner, and I am never ever gonna stab him, you idiot!!")
         return
-    if int(user_id) in SUDO_USERS:
+    if int(user_id) in SUDO_USERS and banner.id == OWNER_ID:
+        message.reply_text("Hey master, I can't gban a sudo user! Please remove him from sudo user list, and try again!")
+        return
+    if int(user_id) in SUDO_USERS and banner.id != OWNER_ID:
         message.reply_text("Fuck off! He is one of my sudo users.")
         return
     if int(user_id) in SUPPORT_USERS:
@@ -114,8 +117,6 @@ def gban(bot: Bot, update: Update, args: List[str]):
         return
 
     message.reply_text("*Blows dust off of banhammer* 😉")
-
-    banner = update.effective_user  # type: Optional[User]
     send_to_list(bot, SUDO_USERS + SUPPORT_USERS,
                  "{} is gbanning user {} "
                  "because:\n{}".format(mention_html(banner.id, banner.first_name),
