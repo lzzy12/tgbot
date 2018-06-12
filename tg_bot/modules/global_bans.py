@@ -42,6 +42,27 @@ UNGBAN_ERRORS = {
     "Chat_admin_required",
 }
 
+def ban_in_all_group(bot: Bot, user_id):
+    chats = get_all_chats()
+    for chat in chats:
+        chat_id = chat.chat_id
+
+        # Check if this group has disabled gbans
+        if not sql.does_chat_gban(chat_id):
+            continue
+
+        try:
+            bot.kick_chat_member(chat_id, user_id)
+        except BadRequest as excp:
+            if excp.message in GBAN_ERRORS:
+                pass
+            else:
+                message.reply_text("Could not gban due to: {}".format(excp.message))
+                send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "Could not gban due to: {}".format(excp.message))
+                sql.ungban_user(user_id)
+                return
+        except TelegramError:
+            pass
 
 @run_async
 def gban(bot: Bot, update: Update, args: List[str]):
@@ -54,15 +75,16 @@ def gban(bot: Bot, update: Update, args: List[str]):
         return
 
     if int(user_id) in SUDO_USERS:
-        message.reply_text("Only My owner {}, can do this!".format(OWNER_USERNAME))
+        message.reply_text("Fuck off! He is one of my sudo users.")
         return
-
+    if int(user_id) == OWNER_ID:
+        message.reply_text("Well, RiP yourself. He's my owner, and I am never ever gonna stab him, you idiot!!")
+        return
     if int(user_id) in SUPPORT_USERS:
         message.reply_text("OOOH someone's trying to gban a support user! *grabs popcorn*")
         return
-
     if user_id == bot.id:
-        message.reply_text("So funny! I won't be globally banning myself -_-")
+        message.reply_text(" -_-So funny! I won't be globally banning myself")
         return
 
     try:
@@ -101,32 +123,23 @@ def gban(bot: Bot, update: Update, args: List[str]):
                  html=True)
 
     sql.gban_user(user_id, user_chat.username or user_chat.first_name, reason)
-
-    chats = get_all_chats()
-    for chat in chats:
-        chat_id = chat.chat_id
-
-        # Check if this group has disabled gbans
-        if not sql.does_chat_gban(chat_id):
-            continue
-
-        try:
-            bot.kick_chat_member(chat_id, user_id)
-        except BadRequest as excp:
-            if excp.message in GBAN_ERRORS:
-                pass
-            else:
-                message.reply_text("Could not gban due to: {}".format(excp.message))
-                send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "Could not gban due to: {}".format(excp.message))
-                sql.ungban_user(user_id)
-                return
-        except TelegramError:
-            pass
-
+    ban_in_all_group(bot, user_id)
     send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "gban complete!")
     message.reply_text("Person has been Globally banned.")
 
-
+#def arabicBot():
+# @run_async
+# def auto_gban_arabicBot(bot: Bot, update: Update, args: List[str]):
+#     if arabicBot():
+#         banner = update.effective_user
+#         send_to_list(bot, SUDO_USERS + SUPPORT_USERS,
+#                      "{} is gbanning user {} "
+#                      "because:\n{}".format(mention_html(banner.id, banner.first_name),
+#                                            mention_html(user_chat.id, user_chat.first_name), reason or "No reason given"),
+#                      html=True)
+#
+#         sql.gban_user(user_id, user_chat.username or user_chat.first_name, reason)
+#
 @run_async
 def ungban(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message  # type: Optional[Message]
