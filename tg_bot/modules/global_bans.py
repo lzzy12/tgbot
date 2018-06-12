@@ -74,11 +74,11 @@ def gban(bot: Bot, update: Update, args: List[str]):
         message.reply_text("You don't seem to be referring to a user.")
         return
 
-    if int(user_id) in SUDO_USERS:
-        message.reply_text("Fuck off! He is one of my sudo users.")
-        return
     if int(user_id) == OWNER_ID:
         message.reply_text("Well, RiP yourself. He's my owner, and I am never ever gonna stab him, you idiot!!")
+        return
+    if int(user_id) in SUDO_USERS:
+        message.reply_text("Fuck off! He is one of my sudo users.")
         return
     if int(user_id) in SUPPORT_USERS:
         message.reply_text("OOOH someone's trying to gban a support user! *grabs popcorn*")
