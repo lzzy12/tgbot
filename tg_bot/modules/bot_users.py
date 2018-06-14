@@ -1,4 +1,4 @@
-import html
+import html, json, ast
 from telegram import Message, Update, Bot, User, Chat, ParseMode
 from telegram.error import BadRequest, TelegramError
 from telegram.ext import run_async, CommandHandler, MessageHandler, Filters
@@ -8,6 +8,7 @@ import tg_bot.modules.sql.users_sql as sql
 
 @run_async
 def listsudo(bot: Bot, update: Update):
+    chat = update.effective_chat
     message = update.effective_message
     reply_msg = ""
     for i in SUDO_USERS:
