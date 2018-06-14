@@ -113,7 +113,7 @@ def button(bot: Bot, update: Update) -> str:
                                               mention_html(user_member.user.id, user_member.user.first_name))
         else:
             update.effective_message.edit_text(
-                "User has already has no warns.".format(mention_html(user.id, user.first_name)),
+                "User already has no warns.".format(mention_html(user.id, user.first_name)),
                 parse_mode=ParseMode.HTML)
 
     return ""

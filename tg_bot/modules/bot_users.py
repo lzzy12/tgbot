@@ -9,11 +9,11 @@ import tg_bot.modules.sql.users_sql as sql
 @run_async
 def listsudo(bot: Bot, update: Update):
     message = update.effective_message
-    reply_msg = "**SUDO USERS:**"
+    reply_msg = ""
     for i in SUDO_USERS:
        reply_msg += "\n" + str(i)
 
-    message.reply_text(reply_msg)
+    message.reply_text("<b>SUDO USERS:</b> {}\n".format(html.escape(reply_msg)), parse_mode=ParseMode.HTML)
     return
 
 __mod_name__ = "Bot users"
