@@ -17,7 +17,7 @@ with open("sudo_users.txt", 'r') as file:
 
 def add_to_sudo(user_id):
     with open("sudo_users.txt", 'a') as outfile:
-        outfile.write(str(user_id) + "\n")
+        outfile.write(user_id)
     SUDO_USERS.append(user_id)   #So that bot need not to be restarted after each gpromotions
 
 
