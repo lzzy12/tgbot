@@ -39,7 +39,7 @@ def gpromote(bot: Bot, update: Update):
             return
         else:
             add_to_sudo(user_id)
-            message.reply_text("{} is now a SUDO user!!".format(user_id.username))
+            message.reply_text("Succefully added to SUDO user list!!")
             return
     else:
         message.reply_text("Only owner of the bot, {} can do this".format(OWNER_USERNAME))
