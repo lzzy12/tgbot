@@ -70,8 +70,7 @@ def gmute(bot: Bot, update: Update, args: List[str]):
     send_to_list(bot, SUDO_USERS + SUPPORT_USERS,
                  "{} is gmuting user {} "
                  "because:\n{}".format(mention_html(muter.id, muter.first_name),
-                                       mention_html(user_chat.id, user_chat.first_name), reason or "No reason given"),
-                 html=True)
+                                       mention_html(user_chat.id, user_chat.first_name), reason or "No reason given"), html=True)
     sql.gmute_user(user_id, user_chat.username or user_chat.first_name, reason)
     chats = get_all_chats()
     for chat in chats:
@@ -90,7 +89,46 @@ def gmute(bot: Bot, update: Update, args: List[str]):
                 return
         except TelegramError:
             pass
-        send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "Gmuted {}.".format(mention_html(user_chat.id, user_chat.first_name)))
+    send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "Gmuted {}.".format(mention_html(user_chat.id, user_chat.first_name)), html=True)
+    message.reply_text("Globally muted!")
+
+
+@run_async
+def ungmute(bot: Bot, update: Update, args: List[str]):
+    message = update.effective_message
+    user_id = extract_user(message, args)
+    if not user_id:
+        message.reply_text("No user refered!")
+        return
+    user_chat = bot.get_chat(user_id)
+    if user_chat.type != 'private':
+        message.reply_text("That's not a user!")
+        return
+    if not sql.is_user_gmuted(user_id):
+        message.reply_text("User is not gmuted")
+        return
+    else:
+        message.reply_text("Un-gmuting user")
+        unmuter = update.effective_user
+        send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "{} is ungmuting user {}".format(mention_html(unmuter.id, unmuter.first_name), mention_html(user_chat.id, user_chat.first_name)), html=True)
+        chats = get_all_chats()
+        for chat in chats:
+            if not sql.does_chat_gmute(chat.chat_id):
+                continue
+            try:
+                bot.restrict_chat_member(chat.chat_id, user_id, can_send_messages=True)
+            except BadRequest as excp:
+                if excp.message in GMUTE_ERRORS:
+                    pass
+                else:
+                    message.reply_text("Could not ungmute because: {}".format(excp.message))
+            except TelegramError:
+                    pass
+        sql.ungmute_user(user_id)
+        send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "Un-gmuted user {}".format(mention_html(user_chat.id, user_chat.first_name)), html=True)
+        message.reply_text("User has been globally unmuted!")
+        return
+
 
 def __user_info__(user_id):
     is_gmuted = sql.is_user_gmuted(user_id)
@@ -107,4 +145,7 @@ def __user_info__(user_id):
 
 GMUTE_HANDLER = CommandHandler("gmute", gmute, pass_args=True,
                               filters=CustomFilters.sudo_filter | CustomFilters.support_filter)
+UNGMUTE_HANDLER =  CommandHandler("ungmute", ungmute, pass_args=True,
+                              filters=CustomFilters.sudo_filter | CustomFilters.support_filter)
 dispatcher.add_handler(GMUTE_HANDLER)
+dispatcher.add_handler(UNGMUTE_HANDLER)
