@@ -11,6 +11,19 @@ from tg_bot.modules.helper_funcs.filters import CustomFilters
 from tg_bot.modules.helper_funcs.misc import send_to_list
 from tg_bot.modules.sql.users_sql import get_all_chats
 
+GMUTE_ERRORS = {
+    "User is an administrator of the chat",
+    "Chat not found",
+    "Not enough rights to restrict/unrestrict chat member",
+    "User_not_participant",
+    "Peer_id_invalid",
+    "Group chat was deactivated",
+    "Chat_admin_required",
+    "Method is available only for supergroups",
+    "Channel_private",
+    "Not in the chat"
+}
+
 def gmute(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     muter = update.effective_user
@@ -68,12 +81,16 @@ def gmute(bot: Bot, update: Update, args: List[str]):
         try:
             bot.restrict_chat_member(chat.chat_id, user_id, can_send_messages=False)
         except BadRequest as excp:
-            message.reply_text("Could not gmute due to: {}".format(excp.message))
-            send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "Could not gmute due to: {}".format(excp.message))
-            sql.ungmute_user(user_id)
-            return
+            if excp.message in GMUTE_ERRORS:
+                pass
+            else:
+                message.reply_text("Could not gmute due to: {}".format(excp.message))
+                send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "Could not gmute due to: {}".format(excp.message))
+                sql.ungmute_user(user_id)
+                return
         except TelegramError:
             pass
+        send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "Gmuted {}.".format(mention_html(user_chat.id, user_chat.first_name)))
 
 GMUTE_HANDLER = CommandHandler("gmute", gmute, pass_args=True,
                               filters=CustomFilters.sudo_filter | CustomFilters.support_filter)
