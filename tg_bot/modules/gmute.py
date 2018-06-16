@@ -92,6 +92,19 @@ def gmute(bot: Bot, update: Update, args: List[str]):
             pass
         send_to_list(bot, SUDO_USERS + SUPPORT_USERS, "Gmuted {}.".format(mention_html(user_chat.id, user_chat.first_name)))
 
+def __user_info__(user_id):
+    is_gmuted = sql.is_user_gmuted(user_id)
+
+    text = "Globally Muted: <b>{}</b>"
+    if is_gmuted:
+        text = text.format("Yes")
+        user = sql.get_gmuted_user(user_id)
+        if user.reason:
+            text += "\nReason: {}".format(html.escape(user.reason))
+    else:
+        text = text.format("No")
+    return text
+
 GMUTE_HANDLER = CommandHandler("gmute", gmute, pass_args=True,
                               filters=CustomFilters.sudo_filter | CustomFilters.support_filter)
 dispatcher.add_handler(GMUTE_HANDLER)
