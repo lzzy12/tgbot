@@ -10,14 +10,9 @@ from tg_bot.modules.helper_funcs.filters import CustomFilters
 from tg_bot.modules.helper_funcs.extraction import extract_user
 from tg_bot import dispatcher, SUDO_USERS, OWNER_USERNAME, OWNER_ID
 
-with open("sudo_users.txt", 'r') as file:
-    for line in file:
-        SUDO_USERS.append(line)
-
-
 def add_to_sudo(user_id):
     with open("sudo_users.txt", 'a') as outfile:
-        outfile.write(user_id)
+        outfile.write(str(user_id) + "\n")
     SUDO_USERS.append(user_id)   #So that bot need not to be restarted after each gpromotions
 
 

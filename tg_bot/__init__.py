@@ -101,6 +101,10 @@ else:
 
 
 SUDO_USERS.add(OWNER_ID)
+lines = [line.rstrip('\n') for line in open("sudo_users.txt")]
+for i in lines:
+        SUDO_USERS.add(i)
+
 updater = tg.Updater(TOKEN, workers=WORKERS)
 
 dispatcher = updater.dispatcher
