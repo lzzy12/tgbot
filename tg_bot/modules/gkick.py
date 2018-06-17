@@ -23,7 +23,8 @@ GKICK_ERRORS = {
     "Only the creator of a basic group can kick group administrators",
     "Channel_private",
     "Not in the chat",
-    "Method is available for supergroup and channel chats only"
+    "Method is available for supergroup and channel chats only",
+    "Reply message not found"
 }
 
 @run_async
@@ -38,7 +39,7 @@ def gkick(bot: Bot, update: Update, args: List[str]):
         else:
             message.reply_text("User cannot be Globally kicked because: {}".format(excp.message))
             return
-     except TelegramError:
+    except TelegramError:
             pass
 
     if not user_id:
