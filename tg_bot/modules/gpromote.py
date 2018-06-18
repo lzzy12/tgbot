@@ -41,7 +41,7 @@ def gpromote(bot: Bot, update: Update, args: List[str]):
          return
     else:
          add_to_sudo(user_id, bot)
-         message.reply_text("Succefully added to SUDO user list!!")
+         message.reply_text("Succefully added to SUDO user list!")
          return
 
 @run_async
@@ -60,11 +60,11 @@ def ungpromote(bot: Bot, update: Update, args: List[str]):
         return
     sql.ungpromote_user(user_id)
     SUDO_USERS.remove(user_id)
-    message.reply_text("User no longer have SUDO user rights!")
+    message.reply_text("Succefully removed from SUDO user list!")
     
 
 
 GPROMOTE_HANDLER = CommandHandler("gpromote", gpromote, pass_args=True, filters=Filters.user(OWNER_ID))
-UNGPROMOTE_HANDLER = CommandHandler("ungpromote", ungpromote, pass_args=True, filters=Filters.user(OWNER_ID))
+UNGPROMOTE_HANDLER = CommandHandler("gdemote", ungpromote, pass_args=True, filters=Filters.user(OWNER_ID))
 dispatcher.add_handler(GPROMOTE_HANDLER)
 dispatcher.add_handler(UNGPROMOTE_HANDLER)
