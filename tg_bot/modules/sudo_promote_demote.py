@@ -26,8 +26,7 @@ def add_to_sudo(user_id, bot):
 
 
 @run_async
-def gpromote(bot: Bot, update: Update):
-    args = List[str]
+def gpromote(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     banner = update.effective_user
     user_id = extract_user(message, args)
@@ -48,23 +47,24 @@ def gpromote(bot: Bot, update: Update):
 @run_async
 def ungpromote(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
-    user_chat = bot.get_chat(user_id)
     user_id = extract_user(message, args)
+    user_chat = bot.get_chat(user_id)
     if not user_id:
         message.reply_text("No user refered")
         return
     if user_chat.type != 'private':
         message.reply_text("That's not a user!")
         return
-    if not sql.is_user_sudo(user_id):
+    if user_id not in SUDO_USERS:
         message.reply_text("{} is not a sudo user".format(user_chat.username))
         return
     sql.ungpromote_user(user_id)
+    SUDO_USERS.remove(user_id)
     message.reply_text("User no longer have SUDO user rights!")
+    
 
 
-
-GPROMOTE_HANDLER = CommandHandler("gpromote", gpromote, filters=Filters.user(OWNER_ID))
-UNGPROMOTE_HANDLER = CommandHandler("ungpromote", ungpromote, filters=Filters.user(OWNER_ID))
+GPROMOTE_HANDLER = CommandHandler("gpromote", gpromote, pass_args=True, filters=Filters.user(OWNER_ID))
+UNGPROMOTE_HANDLER = CommandHandler("ungpromote", ungpromote, pass_args=True, filters=Filters.user(OWNER_ID))
 dispatcher.add_handler(GPROMOTE_HANDLER)
 dispatcher.add_handler(UNGPROMOTE_HANDLER)
