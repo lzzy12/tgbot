@@ -52,7 +52,7 @@ def gkick(bot: Bot, update: Update, args: List[str]):
         message.reply_text("Wow! Someone's so noob that he want to gkick my owner! *Grabs Potato Chips*")
         return
     chats = get_all_chats()
-    message.reply_text("Globally kicking user {}".format(mention_html(user_chat.id, user_chat.first_name)), html=True)
+    message.reply_text("Globally kicking user @{}".format(user_chat.username))
     for chat in chats:
         try:
              bot.unban_chat_member(chat.chat_id, user_id)  # Unban_member = kick (and not ban)
