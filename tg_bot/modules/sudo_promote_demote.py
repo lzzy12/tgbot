@@ -31,23 +31,19 @@ def gpromote(bot: Bot, update: Update):
     message = update.effective_message
     banner = update.effective_user
     user_id = extract_user(message, args)
-    if banner.id == OWNER_ID:
-        if not user_id:
-            message.reply_text("You don't seems to be referring to a user.")
-            return
-        elif int(user_id) in SUDO_USERS:
-            message.reply_text("The user is already a sudo user.")
-            return
-        elif int(user_id) == OWNER_ID:
-            message.reply_text("The specified user is my owner! No need add him to SUDO_USERS list!")
-            return
-        else:
-            add_to_sudo(user_id, bot)
-            message.reply_text("Succefully added to SUDO user list!!")
-            return
+    if not user_id:
+         message.reply_text("You don't seems to be referring to a user.")
+         return
+    elif int(user_id) in SUDO_USERS:
+         message.reply_text("The user is already a sudo user.")
+         return
+    elif int(user_id) == OWNER_ID:
+         message.reply_text("The specified user is my owner! No need add him to SUDO_USERS list!")
+         return
     else:
-        message.reply_text("Only owner of the bot, {} can do this".format(OWNER_USERNAME))
-        return
+         add_to_sudo(user_id, bot)
+         message.reply_text("Succefully added to SUDO user list!!")
+         return
 
 @run_async
 def ungpromote(bot: Bot, update: Update, args: List[str]):
@@ -68,7 +64,7 @@ def ungpromote(bot: Bot, update: Update, args: List[str]):
 
 
 
-GPROMOTE_HANDLER = CommandHandler("gpromote", gpromote, filters = CustomFilters.sudo_filter)
+GPROMOTE_HANDLER = CommandHandler("gpromote", gpromote, filters=Filters.user(OWNER_ID))
 UNGPROMOTE_HANDLER = CommandHandler("ungpromote", ungpromote, filters=Filters.user(OWNER_ID)
 dispatcher.add_handler(GPROMOTE_HANDLER)
 dispatcher.add_handler(UNGPROMOTE_HANDLER)
