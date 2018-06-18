@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-
 import telegram.ext as tg
 
 # enable logging
@@ -101,14 +100,14 @@ else:
 
 
 SUDO_USERS.add(OWNER_ID)
-lines = [line.rstrip('\n') for line in open("sudo_users.txt")]
-for i in lines:
-        SUDO_USERS.add(i)
+import tg_bot.modules.sql.gpromote_sql as gpromote_sql
+sudo_list = gpromote_sql.get_sudo_list()
+for i in sudo_list:
+    temp = i['user_id']
+    SUDO_USERS.add(temp)
 
 updater = tg.Updater(TOKEN, workers=WORKERS)
-
 dispatcher = updater.dispatcher
-
 SUDO_USERS = list(SUDO_USERS)
 WHITELIST_USERS = list(WHITELIST_USERS)
 SUPPORT_USERS = list(SUPPORT_USERS)

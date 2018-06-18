@@ -1,5 +1,4 @@
 tg_bot/config.py
 *.pyc
 .idea/
-sudo_users.txt
 launch.sh

@@ -9,11 +9,20 @@ from telegram.utils.helpers import escape_markdown, mention_html
 from tg_bot.modules.helper_funcs.filters import CustomFilters
 from tg_bot.modules.helper_funcs.extraction import extract_user
 from tg_bot import dispatcher, SUDO_USERS, OWNER_USERNAME, OWNER_ID
+import tg_bot.modules.sql.gpromote_sql as sql
 
-def add_to_sudo(user_id):
-    with open("sudo_users.txt", 'a') as outfile:
-        outfile.write(str(user_id) + "\n")
-    SUDO_USERS.append(user_id)   #So that bot need not to be restarted after each gpromotions
+sudo_list = sql.get_sudo_list()
+for i in sudo_list:
+   SUDO_USERS.append(i)
+
+def add_to_sudo(user_id, bot):
+    try:
+        user_chat = bot.get_chat(user_id)
+    except BadRequest as excp:
+        message.reply_text(excp.message)
+        return
+    sql.gpromote_user(user_id, user_chat.username or user_chat.first_name)
+    SUDO_USERS.append(user_id)
 
 
 @run_async
@@ -33,7 +42,7 @@ def gpromote(bot: Bot, update: Update):
             message.reply_text("The specified user is my owner! No need add him to SUDO_USERS list!")
             return
         else:
-            add_to_sudo(user_id)
+            add_to_sudo(user_id, bot)
             message.reply_text("Succefully added to SUDO user list!!")
             return
     else:
