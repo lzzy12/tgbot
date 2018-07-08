@@ -16,7 +16,7 @@ def send_qrcode(bot: Bot, update: Update, args: List[str]):
     chat = update.effective_chat
     message.reply_text("Processing!")
     gen_qrcode(args)
-    bot.send_photo(chat.id, open("new.png", 'rb'))
+    bot.send_photo(chat.id, open("new.png", 'rb'), caption="Done!")
 
 QR_HANDLER = CommandHandler("qr", send_qrcode, pass_args=True)
 dispatcher.add_handler(QR_HANDLER)
